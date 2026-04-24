@@ -1,5 +1,5 @@
 networks:
-  nest-template:
+  balenciaga:
 
 services:
   postgres:
@@ -11,7 +11,7 @@ services:
     ports:
       - 5432:5432
     networks:
-      - nest-template
+      - balenciaga
     volumes:
       - postgres:/var/lib/postgresql/data
   redis:
@@ -21,7 +21,7 @@ services:
     ports:
       - 6379:6379
     networks:
-      - nest-template
+      - balenciaga
     volumes:
       - redis:/bitnami/redis/data
 

@@ -1,41 +1,32 @@
 import 'reflect-metadata';
 
-import { Response } from 'express';
-
 import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
-import {
-  ArgumentsHost,
-  BadRequestException,
-  ClassSerializerInterceptor,
-  HttpException,
-  HttpStatus,
-  Logger,
-  Module,
-  ValidationPipe,
-  VersioningType
-} from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { Logger, Module } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { NestExpressApplication } from '@nestjs/platform-express';
 
 import KeyvRedis from '@keyv/redis';
-import { HealthzModule } from '@x-spacy/nest-template/healthz/HealthzModule';
-import {
-  I18nModule,
-  I18nService,
-  QueryResolver
-} from 'nestjs-i18n';
+import { ClearModule } from '@x-spacy/balenciaga/clear/ClearModule';
+import { CommandsModule } from '@x-spacy/balenciaga/commands/CommandsModule';
+import { DiscordModule } from '@x-spacy/balenciaga/discord/DiscordModule';
+import { PanelModule } from '@x-spacy/balenciaga/panel/PanelModule';
+import { RolesModule } from '@x-spacy/balenciaga/roles/RolesModule';
+import { DrizzleQueryError } from 'drizzle-orm';
 
-import { DatabaseModule } from '@x-spacy/nest-template/database/DatabaseModule';
+import { DatabaseModule } from '@x-spacy/balenciaga/database/DatabaseModule';
 
 import { Environment } from '@x-spacy/environment';
 
 @Module({
   imports: [
-    HealthzModule,
     DatabaseModule.forRoot(),
     EventEmitterModule.forRoot(),
+    DiscordModule.forRoot(),
+    RolesModule,
+    CommandsModule,
+    ClearModule,
+    PanelModule,
     BullModule.forRoot({
       connection: {
         host: Environment.getString('REDIS_HOST'),
@@ -53,7 +44,7 @@ import { Environment } from '@x-spacy/environment';
       isGlobal: true,
       useFactory: async () => {
         return {
-          ttl: 15_000,
+          ttl: 5_000,
           nonBlocking: true,
           stores: [
             new KeyvRedis({
@@ -62,78 +53,30 @@ import { Environment } from '@x-spacy/environment';
           ]
         };
       }
-    }),
-    I18nModule.forRoot({
-      fallbackLanguage: 'pt-br',
-      throwOnMissingKey: true,
-      logging: true,
-      loaderOptions: {
-        path: `${Environment.workingDirectory}/i18n`,
-        includeSubfolders: true,
-        filePattern: '*.json',
-        watch: true
-      },
-      resolvers: [
-        QueryResolver
-      ]
     })
   ]
 })
 class Application {
   public static async main() {
-    const application = await NestFactory.create<NestExpressApplication>(Application, {
-      cors: {
-        origin: true,
-        credentials: true
-      }
-    });
-
-    application.enableVersioning({
-      type: VersioningType.URI
-    });
-
-    application.useGlobalInterceptors(new ClassSerializerInterceptor(application.get(Reflector)));
-
-    application.useGlobalPipes(new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      exceptionFactory: (errors) => {
-        Logger.error(errors);
-
-        return new BadRequestException({
-          message: errors
-        });
-      },
-      transformOptions: {
-        enableImplicitConversion: true
-      }
-    }));
+    const application = await NestFactory.create(Application);
 
     application.useGlobalFilters({
-      catch: (error: Error, host: ArgumentsHost) => {
-        const response = host.switchToHttp().getResponse<Response>();
+      catch: (error: Error) => {
+        let message = error.message;
 
-        const i18n = application.get<I18nService>(I18nService);
-
-        Logger.error(error.message, error.stack, error.name);
-
-        const status = error instanceof HttpException ? error.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
-
-        let message = i18n.t(`error.${error.name}`);
+        if (error instanceof DrizzleQueryError) {
+          message = error?.cause?.message ?? String(error.cause);
+        }
 
         if (error instanceof TypeError) {
           message = error.message;
         }
 
-        return response.status(status).json({
-          message
-        });
+        Logger.error(message, error.stack, error.name);
       }
     });
 
-    application.listen(Environment.getInt('PORT'), () => {
-      Logger.log(`http server is listening on port ${Environment.getInt('PORT')}`, Application.name);
-    });
+    await application.init();
   }
 }
 

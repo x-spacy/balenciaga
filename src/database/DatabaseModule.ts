@@ -1,10 +1,9 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule } from '@nestjs/common';
 
 import { drizzle } from 'drizzle-orm/bun-sql';
 
 import { Environment } from '@x-spacy/environment';
 
-@Module({})
 export class DatabaseModule {
   public static forRoot(): DynamicModule {
     return {

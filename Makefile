@@ -3,4 +3,4 @@ setup:
 	cp .env.example .env
 
 setup-docker:
-  docker compose up -d
+	docker compose up -d

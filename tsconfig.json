@@ -4,8 +4,11 @@
     "module": "CommonJS",
     "outDir": "dist",
     "paths": {
-      "@x-spacy/nest-template/*": [
+      "@x-spacy/balenciaga/*": [
         "./src/*"
+      ],
+      "@x-spacy/drizzle/schema": [
+        "./drizzle/schema.ts"
       ]
     },
     "strict": true,

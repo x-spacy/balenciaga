@@ -5,7 +5,7 @@ import { Environment } from '@x-spacy/environment';
 
 export default {
   dialect: 'postgresql',
-  schema: './src/**/schemas/*.ts',
+  schema: './drizzle/schema.ts',
   out: './drizzle',
   casing: 'snake_case',
   dbCredentials: {

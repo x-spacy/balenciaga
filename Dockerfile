@@ -2,12 +2,12 @@ FROM oven/bun:slim AS setup
 
 # Create app directory
 
-WORKDIR /home/node/nest-template
+WORKDIR /home/node/balenciaga
 
 # Install app dependencies
 
-COPY package.json /home/node/nest-template/package.json
-COPY bun.lock /home/node/nest-template/bun.lock
+COPY package.json /home/node/balenciaga/package.json
+COPY bun.lock /home/node/balenciaga/bun.lock
 
 # Install app dependencies
 
@@ -27,11 +27,11 @@ FROM installation AS build
 
 # Copy app source
 
-COPY @types /home/node/nest-template/@types
-COPY drizzle /home/node/nest-template/drizzle
-COPY i18n /home/node/nest-template/i18n
-COPY src /home/node/nest-template/src
-COPY tsconfig.json /home/node/nest-template/tsconfig.json
+COPY @types /home/node/balenciaga/@types
+COPY drizzle /home/node/balenciaga/drizzle
+COPY i18n /home/node/balenciaga/i18n
+COPY src /home/node/balenciaga/src
+COPY tsconfig.json /home/node/balenciaga/tsconfig.json
 
 RUN bun run build
 
@@ -43,11 +43,11 @@ ENV NODE_ENV=production
 
 # Copy generated app files
 
-COPY --from=build /home/node/nest-template/dist /home/node/nest-template/src
-COPY --from=production /home/node/nest-template/node_modules /home/node/nest-template/node_modules
-COPY --from=setup /home/node/nest-template/package.json /home/node/nest-template/package.json
-COPY --from=build /home/node/nest-template/i18n /home/node/nest-template/i18n
-COPY --from=build /home/node/nest-template/tsconfig.json /home/node/nest-template/tsconfig.json
+COPY --from=build /home/node/balenciaga/dist /home/node/balenciaga/src
+COPY --from=production /home/node/balenciaga/node_modules /home/node/balenciaga/node_modules
+COPY --from=setup /home/node/balenciaga/package.json /home/node/balenciaga/package.json
+COPY --from=build /home/node/balenciaga/i18n /home/node/balenciaga/i18n
+COPY --from=build /home/node/balenciaga/tsconfig.json /home/node/balenciaga/tsconfig.json
 
 # Expose port
 
