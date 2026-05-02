@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 
+import '@x-spacy/balenciaga/utils/DiscordHelper';
+
 import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Logger, Module } from '@nestjs/common';
@@ -11,6 +13,7 @@ import { ClearModule } from '@x-spacy/balenciaga/clear/ClearModule';
 import { CommandsModule } from '@x-spacy/balenciaga/commands/CommandsModule';
 import { DiscordModule } from '@x-spacy/balenciaga/discord/DiscordModule';
 import { PanelModule } from '@x-spacy/balenciaga/panel/PanelModule';
+import { PointsModule } from '@x-spacy/balenciaga/points/PointsModule';
 import { RolesModule } from '@x-spacy/balenciaga/roles/RolesModule';
 import { DrizzleQueryError } from 'drizzle-orm';
 
@@ -27,6 +30,7 @@ import { Environment } from '@x-spacy/environment';
     CommandsModule,
     ClearModule,
     PanelModule,
+    PointsModule,
     BullModule.forRoot({
       connection: {
         host: Environment.getString('REDIS_HOST'),

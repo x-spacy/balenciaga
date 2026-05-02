@@ -10,8 +10,11 @@ import {
   EmbedBuilder,
   Message,
   TextChannel,
-  User
+  User,
+  UserSelectMenuBuilder
 } from 'discord.js';
+
+import { PermissionEnum } from '@x-spacy/balenciaga/permissions/enums/PermissionEnum';
 
 @Injectable()
 export class PanelCommand extends AbstractCommand {
@@ -20,6 +23,10 @@ export class PanelCommand extends AbstractCommand {
 
   constructor() {
     super('painel');
+  }
+
+  public getPermission() {
+    return PermissionEnum.OPEN_PANEL;
   }
 
   public async execute(message: Message) {
@@ -66,14 +73,14 @@ export class PanelCommand extends AbstractCommand {
           .setStyle(ButtonStyle.Secondary)
       );
 
-    textChannel.send({
+    textChannel.sendTemporaryMessage({
       embeds: [
         embedBuilder
       ],
       components: [
         actionRowBuilder
       ]
-    }).then(message => {
+    }, 15_000).then(message => {
       const collector = message.createMessageComponentCollector();
 
       collector.on('collect', async interaction => {
@@ -96,22 +103,146 @@ export class PanelCommand extends AbstractCommand {
 
     switch (interaction.customId) {
       case 'ADD_PD': {
-        await textChannel.send('Adicionar PD...');
+        textChannel.sendTemporaryMessage({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Adicionar PD :emoji_67:')
+              .setDescription(`
+                Quem você deseja adicionar?
+
+                Selecione o usuário que você deseja adicionar o PD.
+              `)
+              .setColor('#EB4C60')
+          ],
+          components: [
+            new ActionRowBuilder<UserSelectMenuBuilder>()
+              .addComponents(new UserSelectMenuBuilder()
+                .setCustomId('ADD_PD')
+                .setPlaceholder('Selecione o usuário que você deseja adicionar o PD.')
+                .setMinValues(1)
+                .setMaxValues(1))
+          ]
+        }, 15_000).then(message => {
+          const collector = message.createMessageComponentCollector();
+
+          collector.on('collect', async interaction => {
+            if (!interaction.isUserSelectMenu()) {
+              return;
+            }
+
+            this.eventEmitter.emit('PanelCommand.UserSelectMenuInteraction.ADD_PD', author, interaction);
+
+            return interaction.deferUpdate();
+          });
+        });
 
         break;
       }
       case 'ADD_CL': {
-        await textChannel.send('Adicionar CL...');
+        textChannel.sendTemporaryMessage({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Adicionar CL :emoji_67:')
+              .setDescription(`
+                Quem você deseja adicionar?
+
+                Selecione o usuário que você deseja adicionar o CL.
+              `)
+              .setColor('#EB4C60')
+          ],
+          components: [
+            new ActionRowBuilder<UserSelectMenuBuilder>()
+              .addComponents(new UserSelectMenuBuilder()
+                .setCustomId('ADD_CL')
+                .setPlaceholder('Selecione o usuário que você deseja adicionar o CL.')
+                .setMinValues(1)
+                .setMaxValues(1))
+          ]
+        }, 15_000).then(message => {
+          const collector = message.createMessageComponentCollector();
+
+          collector.on('collect', async interaction => {
+            if (!interaction.isUserSelectMenu()) {
+              return;
+            }
+
+            this.eventEmitter.emit('PanelCommand.UserSelectMenuInteraction.ADD_CL', author, interaction);
+
+            return interaction.deferUpdate();
+          });
+        });
 
         break;
       }
       case 'ADD_ANTIBAN': {
-        await textChannel.send('Adicionar Antiban...');
+        textChannel.sendTemporaryMessage({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Adicionar ANTIBAN :emoji_67:')
+              .setDescription(`
+                Quem você deseja adicionar?
+
+                Selecione o usuário que você deseja adicionar o ANTIBAN.
+              `)
+              .setColor('#EB4C60')
+          ],
+          components: [
+            new ActionRowBuilder<UserSelectMenuBuilder>()
+              .addComponents(new UserSelectMenuBuilder()
+                .setCustomId('ADD_ANTIBAN')
+                .setPlaceholder('Selecione o usuário que você deseja adicionar o ANTIBAN.')
+                .setMinValues(1)
+                .setMaxValues(1))
+          ]
+        }, 15_000).then(message => {
+          const collector = message.createMessageComponentCollector();
+
+          collector.on('collect', async interaction => {
+            if (!interaction.isUserSelectMenu()) {
+              return;
+            }
+
+            this.eventEmitter.emit('PanelCommand.UserSelectMenuInteraction.ADD_ANTIBAN', author, interaction);
+
+            return interaction.deferUpdate();
+          });
+        });
 
         break;
       }
       case 'ADD_ELITE': {
-        await textChannel.send('Adicionar Elite...');
+        textChannel.sendTemporaryMessage({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Adicionar ELITE :emoji_67:')
+              .setDescription(`
+                Quem você deseja adicionar?
+
+                Selecione o usuário que você deseja adicionar o ELITE.
+              `)
+              .setColor('#EB4C60')
+          ],
+          components: [
+            new ActionRowBuilder<UserSelectMenuBuilder>()
+              .addComponents(new UserSelectMenuBuilder()
+                .setCustomId('ADD_ELITE')
+                .setPlaceholder('Selecione o usuário que você deseja adicionar o ELITE.')
+                .setMinValues(1)
+                .setMaxValues(1))
+          ]
+        }, 15_000).then(message => {
+          const collector = message.createMessageComponentCollector();
+
+          collector.on('collect', async interaction => {
+            if (!interaction.isUserSelectMenu()) {
+              return;
+            }
+
+            this.eventEmitter.emit('PanelCommand.UserSelectMenuInteraction.ADD_ELITE', author, interaction);
+
+            return interaction.deferUpdate();
+          });
+        });
 
         break;
       }

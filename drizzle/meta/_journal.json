@@ -15,6 +15,20 @@
       "when": 1776986005140,
       "tag": "0001_nebulous_terror",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777428409532,
+      "tag": "0002_brown_maginty",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1777464517199,
+      "tag": "0003_romantic_selene",
+      "breakpoints": true
     }
   ]
 }

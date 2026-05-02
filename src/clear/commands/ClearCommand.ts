@@ -56,9 +56,6 @@ export class ClearCommand extends AbstractCommand {
       }
     }
 
-    await textChannel.bulkDelete(
-      messagesToDelete,
-      true
-    ).then(async () => textChannel.send(`${messagesToDelete.length} Mensagens apagadas.`));
+    await textChannel.bulkDelete(messagesToDelete, true).then(async () => textChannel.sendTemporaryMessage(`${messagesToDelete.length} Mensagens apagadas.`));
   }
 }

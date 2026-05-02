@@ -62,20 +62,23 @@ export class MessageCreatedListener {
       });
 
     if (!command) {
-      return message.reply({
+      return message.replyTemporaryMessage({
         content: `Comando \`'${commandName}'\` desconhecido.`
-      }).then(unknownCommandMessage => setTimeout(() => unknownCommandMessage.delete(), 5_000));
+      });
     }
 
     const hasPermission = await this.checkIfUserHasPermission(Number(message.author.id), command.getPermission());
 
     if (!hasPermission) {
-      return message.reply({
+      return message.replyTemporaryMessage({
         content: 'Você não tem permissão para executar este comando.'
-      }).then(permissionDeniedMessage => setTimeout(() => permissionDeniedMessage.delete(), 5_000));
+      });
     }
 
-    return command.execute(message);
+    return await Promise.all([
+      command.execute(message),
+      message.delete()
+    ]);
   }
 
   private async checkIfUserHasPermission(userId: number, permissionName: PermissionEnum | null) {
